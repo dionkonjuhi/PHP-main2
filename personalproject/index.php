@@ -1,81 +1,98 @@
-<?php
-include 'db8.php';
-if (!isset($_SESSION['admin'])) {
-    header("Location: login.php");
-    exit;
-}
-
-// Kërkim + Filtrim
-$where = "1=1";
-$search = "";
-if (!empty($_GET['q'])) {
-    $search = $_GET['q'];
-    $where .= " AND (title LIKE '%$search%' OR author LIKE '%$search%')";
-}
-
-if (!empty($_GET['year'])) {
-    $year = $_GET['year'];
-    $where .= " AND year = $year";
-}
-
-$result = $conn->query("SELECT * FROM books WHERE $where ORDER BY id DESC");
-?>
-
 <!DOCTYPE html>
-<html lang="sq">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Menaxhimi i Librave</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+	<link rel="apple-touch-icon" href="/docs/5.1/assets/img/favicons/apple-touch-icon.png" sizes="180x180">
+	<link rel="icon" href="/docs/5.1/assets/img/favicons/favicon-32x32.png" sizes="32x32" type="image/png">
+	<link rel="icon" href="/docs/5.1/assets/img/favicons/favicon-16x16.png" sizes="16x16" type="image/png">
+	<link rel="manifest" href="/docs/5.1/assets/img/favicons/manifest.json">
+	<link rel="mask-icon" href="/docs/5.1/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
+	<link rel="icon" href="/docs/5.1/assets/img/favicons/favicon.ico">
+	<style>
+
+		html,
+	body {
+	  height: 100%;
+	}
+
+	body {
+	  display: flex;
+	  align-items: center;
+	  padding-top: 40px;
+	  padding-bottom: 40px;
+	  background-color: #f5f5f5;
+	}
+
+	.form-signin {
+	  width: 100%;
+	  max-width: 330px;
+	  padding: 15px;
+	  margin: auto;
+	}
+
+	.form-signin .checkbox {
+	  font-weight: 400;
+	}
+
+	.form-signin .form-floating:focus-within {
+	  z-index: 2;
+	}
+
+	.form-signin input[type="email"] {
+	  margin-bottom: -1px;
+	  border-bottom-right-radius: 0;
+	  border-bottom-left-radius: 0;
+	}
+
+	.form-signin input[type="password"] {
+	  margin-bottom: 10px;
+	  border-top-left-radius: 0;
+	  border-top-right-radius: 0;
+	}
+	.form-floating{
+		margin: 10px;
+	}
+	</style>
 </head>
-<body class="bg-light">
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>📚 Librat</h2>
-        <div>
-            <a href="create.php" class="btn btn-primary">➕ Shto Libër</a>
-            <a href="logout.php" class="btn btn-secondary">🚪 Dil</a>
-        </div>
+<body class="text-center">
+<!-- Creating a form which will post us some data in register.php file -->
+<main class="form-signin">
+  <form action="register.php" method="post">
+    <img class="mb-4" src="https://getbootstrap.com/docs/5.1/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+    <h1 class="h3 mb-3 fw-normal">Register</h1>
+
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" placeholder="Emri" name="name">
+      <label for="floatingInput">Emri</label>
+    </div>
+    <div class="form-floating">
+      <input type="text" class="form-control" id="floatingInput" placeholder="Username" name="username">
+      <label for="floatingInput">Username</label>
+    </div>
+    <div class="form-floating">
+      <input type="email" class="form-control" id="floatingInput" placeholder="Email" name="email">
+      <label for="floatingInput">Email</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="password">
+      <label for="floatingInput">Password</label>
+    </div>
+    <div class="form-floating">
+      <input type="password" class="form-control" id="floatingPassword" placeholder="Confirm Password" name="confirm_password">
+      <label for="floatingPassword">Confirm Password</label>
     </div>
 
-    <!-- Kërkim -->
-    <form method="GET" class="row g-2 mb-3">
-        <div class="col-md-5">
-            <input type="text" name="q" class="form-control" placeholder="Kërko sipas titullit ose autorit..." value="<?= htmlspecialchars($search) ?>">
-        </div>
-        <div class="col-md-3">
-            <input type="number" name="year" class="form-control" placeholder="Filtrim sipas vitit">
-        </div>
-        <div class="col-md-2">
-            <button class="btn btn-dark w-100">🔍 Kërko</button>
-        </div>
-    </form>
+    <div class="checkbox mb-3">
+      <label>
+        <input type="checkbox" value="remember-me"> Remember me
+      </label>
+    </div>
+    <button class="w-100 btn btn-lg btn-primary" type="submit" name="submit">Sign up</button>
+    <span>Already have an account: </span><a href="login.php">Sign in</a>
+  </form>
+</main>
 
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>Foto</th>
-                <th>Titulli</th>
-                <th>Autori</th>
-                <th>Viti</th>
-                <th>Veprime</th>
-            </tr>
-        </thead>
-        <tbody>
-        <?php while($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><img src="uploads/<?= htmlspecialchars($row['cover']) ?>" width="60" height="80" style="object-fit:cover;"></td>
-                <td><?= htmlspecialchars($row['title']) ?></td>
-                <td><?= htmlspecialchars($row['author']) ?></td>
-                <td><?= $row['year'] ?></td>
-                <td>
-                    <a href="edit.php?id=<?= $row['id'] ?>" class="btn btn-warning btn-sm">✏️</a>
-                    <a href="delete.php?id=<?= $row['id'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('Fshije librin?')">🗑️</a>
-                </td>
-            </tr>
-        <?php endwhile; ?>
-        </tbody>
-    </table>
-</div>
 </body>
 </html>

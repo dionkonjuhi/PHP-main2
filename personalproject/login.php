@@ -1,22 +1,26 @@
 <?php
+session_start();
 include 'db8.php';
 
+// Kontrollo nëse është dërguar forma
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = $_POST['username'];
     $pass = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT * FROM books WHERE username=?");
+    // Përgatisim query për tabelën e përdoruesve (jo books)
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $user);
     $stmt->execute();
     $result = $stmt->get_result();
     $admin = $result->fetch_assoc();
 
+    // Kontrollojmë nëse ekziston përdoruesi dhe nëse password është i saktë
     if ($admin && password_verify($pass, $admin['password'])) {
         $_SESSION['admin'] = $admin['username'];
         header("Location: index.php");
         exit;
     } else {
-        $error = "Username ose password i pasaktë!";
+        $error = "❌ Username ose password i pasaktë!";
     }
 }
 ?>
